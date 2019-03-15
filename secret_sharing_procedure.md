@@ -17,7 +17,7 @@ A few motivating examples:
 
 5. I have a recovery account that I know the address of, and I keep the keys to that account etched in steel and buried in a canister under a tree in my backyard. I want to set up a mechanism to give access to the passphrase of my primary account to this recovery account 6 months after I stop checking in from the primary account.
 
-6. The same example as the above, except I want my three friends to confirm that access should be released to the recovery account, in case someone digs up the keys to that account. Of course, these friends wouldn’t have access to the account, or know that what they’re confirming is the release of access to a secret, to my recovery account.
+6. The same example as the above, except I want my three friends to confirm that access should be released to the recovery account, in case someone digs up the keys to that account. Of course, these friends wouldn’t have access to the account, or know that what they’re confirming is the release of access to a secret to my recovery account.
 
 7. [possibly too complicated] I want to keep my Trezor passphrase with my friends in case I forget it, and I don’t use a recovery account. I have two friends I trust very well, and three that I’m less close to. I’d like a scheme in which one of the friends from the first group needs to combine a part from two of the friends in the second group, and the secret is released to only the friend in the first group. 
 
@@ -160,7 +160,7 @@ Access control helpers for beneficiaries:
     * `(beneficiaries -> return all_subsets(beneficiaries))`
 
 2. The group consisting of the contributing beneficiaries 
-    * `(beneficiaries -> return set(beneficiaries.filter(|b| b.contributing == true)))`
+    * `(beneficiaries -> return set(beneficiaries.filter(|b| b.contributed == true)))`
 
 3. Any beneficiaries where label L equals V 
     * `(beneficiaries -> return all_subsets(beneficiaries.filter(|b| b.labels[L] == V)))`
@@ -222,7 +222,7 @@ parts can only be posted after the condition is met.
 
 once enough parts are posted to meet the threshold, the secret is unlocked and the access control policy kicks in.
 
-### Examples
+### [WIP] Examples
 
 Here we’ll take a couple of examples from the "Use cases" section and go through the steps to set up a secret sharing configuration for them.
 
@@ -264,9 +264,7 @@ when [lawyer and child] combine secret, then [child] receives access.
 
 * I have three children, and I want two of the three children to confirm that the secret should be released, before it is released to all three of them at once.
 
-* I have a recovery account that I know the address of, and I keep the keys to that account etched in steel and buried in a canister under a tree in my backyard. I want to set up a mechanism to give access to the passphrase of my primary account to this recovery account 6 months after I stop checking in from the primary account.
-
-* The same example as the above, except I want my three friends to confirm that access should be released to the recovery account, in case someone digs up the keys to that account. Of course, these friends wouldn’t have access to the account, or know that what they’re confirming is the release of access to a secret, to my recovery account.
+* I have a recovery account that I know the address of, and I keep the keys to that account etched in steel and buried in a canister under a tree in my backyard. I want to set up a mechanism to give access to the passphrase of my primary account to this recovery account 6 months after I stop checking in from the primary account. However, I want my three friends to confirm that access should be released to the recovery account, in case someone digs up the keys to that account. Of course, these friends wouldn’t have access to the account, or know that what they’re confirming is the release of access to a secret to my recovery account.
 
 * [possibly too complicated] I want to keep my Trezor passphrase with my friends in case I forget it, and I don’t use a recovery account. I have two friends I trust very well, and three that I’m less close to. I’d like a scheme in which one of the friends from the first group needs to combine a part from two of the friends in the second group, and the secret is released to only the friend in the first group. 
 
