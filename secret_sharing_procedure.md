@@ -21,9 +21,9 @@ A few motivating examples:
 
 7. [possibly too complicated] I want to keep my Trezor passphrase with my friends in case I forget it, and I don’t use a recovery account. I have two friends I trust very well, and three that I’m less close to. I’d like a scheme in which one of the friends from the first group needs to combine a part from two of the friends in the second group, and the secret is released to only the friend in the first group. 
 
-NOTE: With all of these examples, the beneficiaries could either have the secret parts themselves to be able to recover the secret without SecretKeeper, or they could only have control over whether or not the secret part was submitted for combination (which doesn’t necessarily need to be executed if Enigma stores the secret directly). There are more complicated schemes here where beneficiaries could choose to combine secret parts with only certain other beneficiaries, and this may not be worth exploring as part of the access control capabilities at this point.
+**NOTE**: With all of these examples, the beneficiaries could either have the secret parts themselves to be able to recover the secret without SecretKeeper, or they could only have control over whether or not the secret part was submitted for combination (which doesn’t necessarily need to be executed if Enigma stores the secret directly). There are more complicated schemes here where beneficiaries could choose to combine secret parts with only certain other beneficiaries, and this may not be worth exploring as part of the access control capabilities at this point.
 
-TODO: think about adding incentivization to this as well, this is probably more complicated than it’s worth to do it in code.
+TODO: think about adding incentivization to this as well, this is probably more complicated than it’s worth to do in code.
 
 ### Steps
 
@@ -33,13 +33,13 @@ The parts are assigned to beneficiaries, along with a release condition that nee
 
 Once the release condition is fulfilled, access control policies will be responsible for determining the logic of combining and releasing the secret.
 
-1. Specify beneficiaries
+#### 1. Specify beneficiaries
 
 For each beneficiary:
 
 * Input their Ethereum public address
 
-2. Generate secret parts
+#### 2. Generate secret parts
 
     * Input the secret
 
@@ -51,15 +51,15 @@ For each beneficiary:
 
         1. TODOs:
 
-        2. think about generating parts locally vs. in an Enigma secret contract. There doesn’t seem to be a significant advantage to generating these parts with Enigma, because modifications to *k *or *n *will require all of the parts to be generated again anyway, and access control changes shouldn’t change the underlying secret parts.
+        2. think about generating parts locally vs. in an Enigma secret contract. There doesn’t seem to be a significant advantage to generating these parts with Enigma, because modifications to *k* or *n* will require all of the parts to be generated again anyway, and access control changes shouldn’t change the underlying secret parts.
 
         3. Think about whether Enigma should store the actual secret as well (which would be necessary if it had to generate parts in a secret contract)
 
         4. Think about whether a publicly verifiable secret sharing (PVSS) scheme is necessary to prevent counterfeit parts (if beneficiaries have access to the secret parts themselves). See [here](https://ethresear.ch/t/security-considerations-for-shamirs-secret-sharing/4294).
 
-NOTE: The default setting is to have *n* equal to the number of beneficiaries, and *k *equal to 1.
+    * **NOTE**: The default setting is to have *n* equal to the number of beneficiaries, and *k* equal to 1.
 
-3. Assign parts to beneficiaries
+#### 3. Assign parts to beneficiaries
 
     * For each beneficiary, input the secret parts that this beneficiary will have claim to, once the release conditions are met.
 
@@ -69,7 +69,7 @@ NOTE: The default setting is to have *n* equal to the number of beneficiaries, a
 
     * TODO: Think about if keeping the parts from the beneficiary gives significant advantages for control over the secret.
 
-4. Define release conditions
+#### 4. Define release conditions
 
     * For each beneficiary, define a release condition that must be fulfilled for the secret parts to be viewed (or controlled) by that beneficiary.
 
@@ -85,7 +85,7 @@ NOTE: The default setting is to have *n* equal to the number of beneficiaries, a
 
             * TODO: what would this look like?
 
-            * If testator has not checked in for _ months and secret parts have not been submitted by
+            * If testator has not checked in for X months and secret parts have not been submitted by
 
                 * any beneficiary from this group
 
@@ -94,23 +94,24 @@ NOTE: The default setting is to have *n* equal to the number of beneficiaries, a
                 * all other beneficiaries 
 
             * TODO: not sure if these need to be expanded/ more general.
-TODO: Decide if it makes sense to use secret parts as the fulfillment condition as well (specified secret parts have not been submitted?)
+            
+            * TODO: Decide if it makes sense to use secret parts as the fulfillment condition as well (specified secret parts have not been submitted?)
 
-NOTE: the default is to add a time lock condition of 6 months without a check in (from the same beneficiary), for each beneficiary.
+        * **NOTE**: the default is to add a time lock condition of 6 months without a check in (from the same beneficiary), for each beneficiary.
 
-5. [SUPER WIP] Define access control rules
+#### 5. [WIP] Define access control rules
 
 Access control rules are specified in the following format:
 
-Simple:
+_Simple:_
 
-When [this beneficiary group] submits secret parts for combination and they are successfully combined, then [this beneficiary group] will have access to retrieve the secret.
+> When `[beneficiary group]` submits secret parts for combination and they are successfully combined, then `[beneficiary group]` will have access to retrieve the secret.
 
-Advanced:
+_Advanced:_
 
-When [this set of secret parts] are submitted for combination and successfully combined, then [this beneficiary group] will have access to retrieve the secret.
+> When `[set of secret parts]` are submitted for combination and successfully combined, then `[beneficiary group]` will have access to retrieve the secret.
 
-NOTE: Each advanced rule must specify only *k* unique secret parts. There can only be one rule with a given beneficiary group or set of secret parts.
+**NOTE**: Each advanced rule must specify only *k* unique secret parts. There can only be one rule with a given beneficiary group or set of secret parts.
 
 Both beneficiaries and secret parts may be labeled with key-value pairs, to make them easier to separate into groups. One (possibly) useful example of a custom label is "num_parts", which would be set to the number of parts a beneficiary controls. TODO: decide whether you want to add this label automatically
 
@@ -122,23 +123,21 @@ Access control helpers can be used to select certain predefined groups of benefi
 
 TODO: look into selector funcs and logic evaluation for custom helpers. Not really a selector func, more of a set generator. Don’t know if eval’ing code is a bad idea, look further into that. There shouldn’t be malicious attacks if the input is limited to the set of all beneficiary objects or the set of all secret objects, because the testator doesn’t have anything to gain from a bad function.
 
-The input to these functions will be either a set of all secret parts:
+The input to these functions will be either a list of all `secret_part`s:
 
+```
 secret_part {
-
-map<string,string> labels
-
+  map<string,string> labels
 }
+```
 
-or a list of all beneficiaries:
-
+or a list of all `beneficiary` objects:
+```
 beneficiary {
-
-bool contributed
-
-map<string,string> labels
-
-},
+  bool contributed
+  map<string,string> labels
+}
+```
 
 where the contributed flag is true if and only if a beneficiary has submitted a secret part for combination.
 
@@ -146,27 +145,36 @@ TODO: should this necessarily mean they were the first one to submit a part? Or 
 
 Access control helpers for secret parts:
 
-1. any set of secret parts (parts -> return all_size_k_subsets(parts))
+1. Any set of secret parts 
+    * `(parts -> return all_size_k_subsets(parts))`
 
-2. any secret parts with label L (parts -> return all_size_k_subsets(parts.filter(|p| p.label == L))
+2. Any secret parts with label L 
+    * `(parts -> return all_size_k_subsets(parts.filter(|p| p.label == L)))`
 
-3. the set consisting of all secret parts (parts -> return parts)
+3. The set consisting of all secret parts 
+    * `(parts -> return parts)`
 
 Access control helpers for beneficiaries:
 
-1. any group of beneficiaries (beneficiaries -> return all_subsets(beneficiaries))
+1. Any group of beneficiaries 
+    * `(beneficiaries -> return all_subsets(beneficiaries))`
 
-2. group consisting of the contributing beneficiaries (beneficiaries -> return set(beneficiaries.filter(|b| b.contributing == true)))
+2. The group consisting of the contributing beneficiaries 
+    * `(beneficiaries -> return set(beneficiaries.filter(|b| b.contributing == true)))`
 
-3. any beneficiaries where label L equals V (beneficiaries -> return all_subsets(beneficiaries.filter(|b| b.labels[L] == V)))
+3. Any beneficiaries where label L equals V 
+    * `(beneficiaries -> return all_subsets(beneficiaries.filter(|b| b.labels[L] == V)))`
 
-4. the group consisting of all beneficiaries (beneficiaries -> return set(beneficiaries))
+4. The group consisting of all beneficiaries 
+    * `(beneficiaries -> return set(beneficiaries))`
 
-    1. NOTE: this means that all beneficiaries need to participate for the secret to be released, which doesn’t necessarily imply that each beneficiary holds unique secret parts.
+    1. **NOTE**: this means that all beneficiaries need to participate for the secret to be released, which doesn’t necessarily imply that each beneficiary holds unique secret parts.
 
-5. any group of size k beneficiaries (beneficiaries -> return all_size_k_subsets(beneficiaries)
+5. Any group of size *k* beneficiaries 
+    * `(beneficiaries -> return all_size_k_subsets(beneficiaries)`
 
-6. any beneficiaries who control k parts [this must be implemented manually with custom labels] (beneficiaries -> return all_subsets(beneficiaries.filter(|b| b.labels["num_parts"] == “k”)))
+6. Any beneficiaries who control *k* parts [this must be implemented manually with custom labels] 
+    * `(beneficiaries -> return all_subsets(beneficiaries.filter(|b| b.labels["num_parts"] == “k”)))`
 
 TODO: think about this model and whether it can be simplified. These conditions may reduce to something more basic. Maybe selector functions that are modifiable, and operate on the entire set of secrets or beneficiaries.
 
@@ -174,18 +182,16 @@ TODO: The subset generation has issues, because there are subsets of the benefic
 
 TODO: think about required parts as well as optional ones, and whether that’s worth it.
 
-NOTE: The default access control rule is "When [any group of beneficiaries] submits secret parts for combination and they are successfully combined, then [any group of beneficiaries] will have access to retrieve the secret."
+**NOTE**: The default access control rule is "When [any group of beneficiaries] submits secret parts for combination and they are successfully combined, then [any group of beneficiaries] will have access to retrieve the secret."
 
 #### 6. Specify privacy options
 
+ Most configurations should be private by default:
+    
     * Can make the parts private (beneficiaries can only combine, not view parts)
-
     * Can make last check in time private
-
     * Can make other beneficiaries private to any beneficiary
-
     * Can make visibility of which secret part numbers have been submitted private
-
     * Can make access control rules private
 
 TODO: maybe do this in the appropriate previous steps rather than in a separate one?
@@ -196,7 +202,7 @@ TODO: not sure what to put here.
 
 The next step is on the beneficiary side, once the secret parts are unlocked, and when the secrets are combined.
 
-#### 8. Secret part combination
+#### 8. [WIP] Secret part combination
 
 beneficiaries may have permissions to retrieve and view secret parts. 
 
@@ -244,7 +250,7 @@ define access control rule: when [any group of beneficiaries holding 1 part] are
 
 * [possibly unrealistic example, also this is just like SafeHaven] I have a child who’s twelve years old and I want him to have my cryptoassets when I pass away. I have a lawyer, but I don’t want to give him the secret to hold. I’d like to give the lawyer an easy way to release access to the secret without holding the secret itself, while preventing my child from accessing the secret until two years after I stop checking in.
 
-* NOTE: In reality, it may be possible to have the lawyer sign a contract stating that they’ll keep the secret part confidential, and release it to your child at some point.
+* **NOTE**: In reality, it may be possible to have the lawyer sign a contract stating that they’ll keep the secret part confidential, and release it to your child at some point.
 
 split the secret into two parts
 
