@@ -149,13 +149,14 @@ where the contributed flag is true if and only if a beneficiary has submitted a 
 
 TODO: should this necessarily mean they were the first one to submit a part? Or just that they submitted it? 
 
-Access control helpers for secret parts:
+Access control helpers for secret parts (where k refers to the threshold):
+TODO: how is k introduced into these methods?
 
 1. Any set of secret parts 
     * `(parts -> return all_size_k_subsets(parts))`
 
-2. Any secret parts with label L 
-    * `(parts -> return all_size_k_subsets(parts.filter(|p| p.label == L)))`
+2. Any secret parts where label L equals V
+    * `(parts -> return all_size_k_subsets(parts.filter(|p| p.labels[L] == V)))`
 
 3. The set consisting of all secret parts 
     * `(parts -> return parts)`
@@ -177,7 +178,7 @@ Access control helpers for beneficiaries:
     1. **NOTE**: this means that all beneficiaries need to participate for the secret to be released, which doesn’t necessarily imply that each beneficiary holds unique secret parts.
 
 5. Any group of size *k* beneficiaries 
-    * `(beneficiaries -> return all_size_k_subsets(beneficiaries)`
+    * `(beneficiaries -> return all_size_k_subsets(beneficiaries))`
 
 6. Any beneficiaries who control *k* parts [this must be implemented manually with custom labels] 
     * `(beneficiaries -> return all_subsets(beneficiaries.filter(|b| b.labels["num_parts"] == “k”)))`
