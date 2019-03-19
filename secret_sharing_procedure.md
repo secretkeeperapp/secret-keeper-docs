@@ -83,9 +83,9 @@ For each beneficiary:
 
             * Fulfilled when a certain amount of time has passed without the testator checking in.
 
-        * Second-level DMS time-lock
+        * Beneficiary time-lock
 
-            * Fulfilled when a certain amount of time has passed without a specified set of other beneficiaries accessing the secret, and the testator checking in.
+            * Fulfilled when a certain amount of time has passed without a specified set of other beneficiaries accessing the secret, or checking in themselves (depending on how the keepalive mechanism is registered).
 
             * TODO: what would this look like?
 
@@ -102,6 +102,9 @@ For each beneficiary:
             * TODO: Decide if it makes sense to use secret parts as the fulfillment condition as well (specified secret parts have not been submitted?)
 
         * **NOTE**: the default is to add a time lock condition of 6 months without a check in (from the same beneficiary), for each beneficiary.
+        
+TODO: Think about delegating access, e.g. giving a beneficiary the ability to pass on a secret even if they're not able to retrieve it. If you do anything more than let beneficiaries keep similar conditions and designate other beneficiaries, it may get too complicated. The behavior could be: If the beneficiary does not check in or combine secrets, use the testator default delegation method. Otherwise, let the beneficiary specify another beneficiary and condition.
+ This is more passive/ easier to implement than allowing beneficiaries to change the destination address of another beneficiary.  
 
 #### 5. [WIP] Define access control rules
 
