@@ -1,9 +1,8 @@
 ### Summary
 
-The purpose of this document is to specify a secret sharing and DMS application with a general set of actions. These actions should allow a testator (i.e. secret creator) to manage secrets in scenarios that are more complicated than the typical DMS use case of unlocking a single secret for one or multiple beneficiaries (i.e. secret recipients), after a time delay has passed.
+The purpose of this document is to specify a general set of actions for a secret sharing and DMS application. These actions should allow a testator (i.e. secret creator) to manage secrets for one or multiple beneficiaries (i.e. secret recipients), in scenarios that are more complicated than the typical DMS use case of unlocking a single secret after a time delay has passed.
 
 ### Use cases
-
 
 A few motivating examples:
 
@@ -18,7 +17,7 @@ A few motivating examples:
 5. I have a recovery account that I know the address of, and I keep the keys to that account etched in steel and buried in a canister under a tree in my backyard. I want to set up a mechanism to give access to the passphrase of my primary account to this recovery account 6 months after I stop checking in from the primary account.
 
 6. The same example as the above, except I want my three friends to confirm that access should be released to the recovery account, in case someone saw my midnight gardening, and they dig up and steal the keys to that account. Of course, these friends wouldn’t have access to the account, or know that what they’re confirming is the release of access to a secret to my recovery account.
-TODO: this wouldn't really be useful unless a) you have another set of keys, b) the person who has the keys isn't able to claim the assets or operate the account (maybe due to a passphrase), c) the friends are able to vote to change the beneficiary to the account. The easiest way to address this would be for the beneficiary to set a passphrase on a secret, and require this passphrase in order to view the secret. Changing the beneficiary through an action specified by beneficiaries is more difficult. Testators may also want passphrases.
+TODO: this wouldn't really be useful unless a) you have another set of keys that you hid somewhere else, and b) the person who has the keys isn't able to claim the assets or operate the account (maybe due to a passphrase), or c) the friends are able to vote to change the beneficiary to the account. The easiest way to address this would be for the testator or beneficiary to set a passphrase on a secret, and require this passphrase in order to view the secret. Changing the beneficiary through an action specified by other beneficiaries is more difficult. Testators may also want a passphrase to view a certain secret, as well as the ability to set the passphrase for a beneficiary.
 
 7. [possibly too complicated] I want to keep my Trezor passphrase with my friends in case I forget it, and I don’t use a recovery account. I have two friends I trust very well, and three that I’m less close to. I’d like a scheme in which one of the friends from the first group needs to combine a part from two of the friends in the second group, and the secret is released to only the friend in the first group. 
 
@@ -41,6 +40,7 @@ Once the release condition is fulfilled, access control policies will be respons
 For each beneficiary:
 
 * Input their Ethereum public address
+* [Optional] Input a beneficiary passphrase, or enable a beneficiary to use a passphrase. This passphrase can either be set by the testator in this step, or set by the beneficiary at a later point. A way to generate a secure passphrase should be provided.
 
 #### 2. Generate secret parts
 
@@ -70,8 +70,6 @@ For each beneficiary:
 
     * For each beneficiary, for the entire set of secret parts, specify whether the beneficiary is able to retrieve the secret parts themselves, or only have control over whether or not the part is submitted for combination. 
     
-      * Add an optional passphrase on the secret, or let the beneficiary set a passphrase. 
-
     * TODO: Think about if keeping the parts from the beneficiary gives significant advantages for control over the secret.
     
 
@@ -195,42 +193,41 @@ TODO: think about required parts as well as optional ones, and whether that’s 
 
  Almost all configurations should be private by default:
     
-    * The secret parts (beneficiaries can only combine, not view parts).
-    * The testator's last check in time.
-    * Other beneficiaries, for a particular beneficiary.
-    * Visibility of which secret part numbers have been submitted.
-    * Access control rules.
-    * The secret (this could optionally be private for the testator themselves).
-    * etc.
+    * For beneficiaries:
+      * Whether they have ownership over the secret parts (e.g. beneficiaries can only combine, not view parts).
+      * Whether they are able to see whether parts have been posted from other beneficiaries.
+      * Whether they can see the addresses of or number of other beneficiaries.
+      * Whether they are able to take back submission of secret parts.
+      * Whether they can see the access control rules.
+      * [May be too complicated, no use cases] Whether they are able to post all the parts they own for a secret at once, or can submit them one by one?
+
+    * For the testator:
+      * Whether beneficiaries can see the last check in time.
+      * The secret (this could optionally be private for the testator themselves).
 
 TODO: maybe do this in the appropriate previous steps rather than in a separate one?
 
 #### 7. Review and submit.
 
-TODO: not sure what to put here.
+The testator can now set an optional (but recommended) passphrase on the secret itself. If the passphrase is set, it will be needed to view or change the secret configuration.
 
-The next step is on the beneficiary side, once the secret parts are unlocked, and when the secrets are combined.
+---
+
+The next step is initiated by the beneficiaries, once a sufficient number of conditions have been met to unlock at least *k* unique secret parts.
 
 #### 8. [WIP] Secret part combination
 
-Beneficiaries may have permissions to retrieve and view secret parts. 
+The following checks are completed when a beneficiary submits secret parts:
+* The secret parts are owned by that beneficiary, and exactly match what has been assigned to them.
 
-Alternately, they can see whether parts have been posted to unlock the secret, and post parts themselves.
+TODO: Right now, we assume that it's unnecessarily complicated for beneficiaries to submit groups of secret parts smaller than the group of all the parts they have. So there will be an explicit check when beneficiaries submit parts that they will be submitting all the parts that have been assigned to them.
 
-if other beneficiaries are private, they can optionally see the total number of parts, and which parts have been posted.
+The parts can only be posted after the condition is met. Once enough parts are posted to meet the threshold, the secret is unlocked and the access control policies come into effect.
 
-Should they be able to see parts posted from other beneficiaries?
-Should they be able to take back submission of secret parts?
-Should they be able to post all the parts they own for a secret at once? Or be able to submit them one by one?
-Should there be an incentive system for beneficiaries to submit parts if they don’t get access to the secret? Should this come from the testator, or the beneficiaries that have access?
-
-The parts can only be posted after the condition is met.
-
-Once enough parts are posted to meet the threshold, the secret is unlocked and the access control policies are in effect.
 
 ### [WIP] Examples
 
-Here we’ll take a couple of examples from the "Use cases" section and go through the steps to set up a secret sharing configuration for them.
+Here we will take a couple of examples from the "Use cases" section and go through the steps to set up a secret sharing configuration for them.
 
 * I have two family members, and a close family friend. I would like to leave assets to the two family members, but if they are unable to claim them in the case of an emergency, I would like the close family friend to have control over the assets.
 
@@ -303,3 +300,4 @@ the purpose of this is to let family have immediate access, but multiple friends
 ### Open questions:
 
 Should there be a way for beneficiaries to prove to each other that they have the secret parts?
+Should there be an incentive system for beneficiaries to submit parts if they don’t get access to the secret? Should this come from the testator, or the beneficiaries that have access?
