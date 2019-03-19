@@ -14,12 +14,9 @@ A few motivating examples:
 
 4. I have three children, and I want two of the three children to confirm that the secret should be released, before it is released to all three of them at once.
 
-5. I have a recovery account that I know the address of, and I keep the keys to that account etched in steel and buried in a canister under a tree in my backyard. I want to set up a mechanism to give access to the passphrase of my primary account to this recovery account 6 months after I stop checking in from the primary account.
-
-6. The same example as the above, except I want my three friends to confirm that access should be released to the recovery account, in case someone saw my midnight gardening, and they dig up and steal the keys to that account. Of course, these friends wouldn’t have access to the account, or know that what they’re confirming is the release of access to a secret to my recovery account.
-TODO: this wouldn't really be useful unless a) you have another set of keys that you hid somewhere else, and b) the person who has the keys isn't able to claim the assets or operate the account (maybe due to a passphrase), or c) the friends are able to vote to change the beneficiary to the account. The easiest way to address this would be for the testator or beneficiary to set a passphrase on a secret, and require this passphrase in order to view the secret. Changing the beneficiary through an action specified by other beneficiaries is more difficult. Testators may also want a passphrase to view a certain secret, as well as the ability to set the passphrase for a beneficiary.
-
-7. [possibly too complicated] I want to keep my Trezor passphrase with my friends in case I forget it, and I don’t use a recovery account. I have two friends I trust very well, and three that I’m less close to. I’d like a scheme in which one of the friends from the first group needs to combine a part from two of the friends in the second group, and the secret is released to only the friend in the first group. 
+5. I have a recovery account that I know the address of, and I keep the keys to that account etched in steel and buried in a canister under a tree in my backyard, as well as in a couple other locations. I want to set up a mechanism to give access to the passphrase of my primary account to this recovery account, 6 months after I stop checking in from the primary account. However, if someone digs up the keys and uses them to access the account, I want to ensure only I can view the passphrase once it's released.
+TODO: The easiest way to address this would be for the testator or beneficiary to set a passphrase on a secret, and require this passphrase in order to view the secret. Changing the beneficiary through an action specified by other beneficiaries is more difficult.
+Also, this relies on the session key encryption that Enigma provides, since the passphrase will be sent in a message that can be read by whoever was able to execute that transaction successfully.
 
 **NOTE**: In each of these examples, the beneficiaries could either have the secret parts themselves to be able to recover the secret without SecretKeeper, or they could only have control over whether or not the secret part was submitted for combination (which doesn’t necessarily need to be executed if Enigma stores the secret directly). There are more complicated schemes here where beneficiaries could choose to combine secret parts with only certain other beneficiaries, and this may not be worth exploring as part of the access control capabilities at this point.
 
@@ -270,9 +267,7 @@ when [lawyer and child] combine secret, then [child] receives access.
 
 * I have three children, and I want two of the three children to confirm that the secret should be released, before it is released to all three of them at once.
 
-* I have a recovery account that I know the address of, and I keep the keys to that account etched in steel and buried in a canister under a tree in my backyard. I want to set up a mechanism to give access to the passphrase of my primary account to this recovery account 6 months after I stop checking in from the primary account. However, I want my three friends to confirm that access should be released to the recovery account, in case someone digs up the keys to that account. Of course, these friends wouldn’t have access to the account, or know that what they’re confirming is the release of access to a secret to my recovery account.
-
-* [possibly too complicated] I want to keep my Trezor passphrase with my friends in case I forget it, and I don’t use a recovery account. I have two friends I trust very well, and three that I’m less close to. I’d like a scheme in which one of the friends from the first group needs to combine a part from two of the friends in the second group, and the secret is released to only the friend in the first group. 
+* I have a recovery account that I know the address of, and I keep the keys to that account etched in steel and buried in a canister under a tree in my backyard. I want to set up a mechanism to give access to the passphrase of my primary account to this recovery account 6 months after I stop checking in from the primary account.
 
 ### Scratchpad [TODO: remove]:
 
@@ -303,4 +298,5 @@ the purpose of this is to let family have immediate access, but multiple friends
 ### Open questions:
 
 Should there be a way for beneficiaries to prove to each other that they have the secret parts?
-Should there be an incentive system for beneficiaries to submit parts if they don’t get access to the secret? Should this come from the testator, or the beneficiaries that have access?
+Should there be an incentive system for beneficiaries to submit parts if they don’t get access to the secret?
+Should this come from the testator, or the beneficiaries that have access?
