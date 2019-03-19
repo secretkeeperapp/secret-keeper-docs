@@ -21,7 +21,7 @@ TODO: this wouldn't really be useful unless a) you have another set of keys that
 
 7. [possibly too complicated] I want to keep my Trezor passphrase with my friends in case I forget it, and I don’t use a recovery account. I have two friends I trust very well, and three that I’m less close to. I’d like a scheme in which one of the friends from the first group needs to combine a part from two of the friends in the second group, and the secret is released to only the friend in the first group. 
 
-**NOTE**: With all of these examples, the beneficiaries could either have the secret parts themselves to be able to recover the secret without SecretKeeper, or they could only have control over whether or not the secret part was submitted for combination (which doesn’t necessarily need to be executed if Enigma stores the secret directly). There are more complicated schemes here where beneficiaries could choose to combine secret parts with only certain other beneficiaries, and this may not be worth exploring as part of the access control capabilities at this point.
+**NOTE**: In each of these examples, the beneficiaries could either have the secret parts themselves to be able to recover the secret without SecretKeeper, or they could only have control over whether or not the secret part was submitted for combination (which doesn’t necessarily need to be executed if Enigma stores the secret directly). There are more complicated schemes here where beneficiaries could choose to combine secret parts with only certain other beneficiaries, and this may not be worth exploring as part of the access control capabilities at this point.
 
 TODO: think about adding incentivization to this as well, this is probably more complicated than it’s worth to do in code.
 
